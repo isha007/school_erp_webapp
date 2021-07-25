@@ -1,0 +1,115 @@
+{% extends "page1/base.html" %}
+{% load crispy_forms_tags %}
+{% load customtags %}
+{% block content %}
+{% if user.is_authenticated %}
+
+<style>
+    input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+</style>
+
+    <div class="" style="padding-top:0px;">
+        <ol class="breadcrumb" style="background: transparent; font-size:14px; font-weight:700;">
+            <li class="breadcrumb-item"><a href="{% url 'project-home' %}" style="text-decoration:none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Fee payment Report</li>
+        </ol>
+        <div class="container" style="border-radius:5px;"><br>
+            <div class="card" style="border-radius:5px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+                <div class="card-body" style="padding: 25px;">
+                    <h2 style="text-align: center;">Payment Report</h2>
+                    <br>
+                    <div class="form-row" style="padding:10px;text-align:center;">
+                        <div style="position:relative;">
+                        <form action="/fee_report" method="post" class="form-inline">
+                            {% csrf_token %}
+                            <div class="form-group mb-2"><h5>Enter values: </h5></div>
+                            <div class="form-group mx-sm-3 mb-2">
+                            <select name="month" id="month" class="form-control">
+                                <option selected disabled><span class="th-sm" style="">Enter month</span></option>
+                                <option name="month" value="January">January</option>
+                                <option name="month" value="February">February</option>
+                                <option name="month" value="March">March</option>
+                                <option name="month" value="April">April</option>
+                                <option name="month" value="May">May</option>
+                                <option name="month" value="June">June</option>
+                                <option name="month" value="July">July</option>
+                                <option name="month" value="August">August</option>
+                                <option name="month" value="September">September</option>
+                                <option name="month" value="October">October</option>
+                                <option name="month" value="November">November</option>
+                                <option name="month" value="December">December</option>
+                            </select>
+                            </div>
+                            <!input type="text" name="month" placeholder="Enter month">
+                            <div class="form-group mx-sm-3 mb-2">
+                                <input oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                       type="number" name="year" maxlength="4" placeholder="Enter year" class="form-control ">
+                            </div>
+                            <div class="form-group mb-2">
+                                <select name="type_of_payment" id="type_of_payment" class="form-control">
+                                        <option selected disabled><span class="th-sm" style="">Select payment type</span> </option>
+                                    {% for i in lookup_type %}
+                                    <option value={{ i.lookup_inputvalue }} name="type_of_payment">{{ i.lookup_inputvalue |title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            &nbsp;
+
+                            <button type="submit" class="btn btn-primary mx-sm-3 mb-2">Submit</button>
+                        </form>
+                        </div>
+                    </div>
+<!--
+        {% if class_type == "teacher_type" %}
+            <div class="form-row" style="padding:5px;">
+                <div style="">{% for i in student_teacher_name %}Teacher Name : {{ i|title }}{% endfor %}</div>
+            </div><br>
+            <div style="overflow:auto;">
+            <table id="dtBasicExample" class="table table-bordered table-hover table-sm style-table" cellspacing="20" style="background-color:#FFFFFF;">
+                <thead>
+                    <tr>
+                        <th>
+                            Admission No.
+                        </th>
+                        <th>
+                            Student Name
+                        </th>
+                        <th>
+                            Date of Birth
+                        </th>
+                        <th>
+                            Age
+                        </th>
+                        <th>
+                            Class Name
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in student_details %}
+                    <tr>
+                        <td>{{ i.admission_number }}</td>
+                        <td>{{ i.first_name|title }} {{i.last_name|title}}</td>
+                        <td>{{ i.student_birthday }}</td>
+                        <td>{{ i.age }}</td>
+                        <td>{{ i.class1 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        {% endif %}
+        -->
+        </div>
+    </div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}

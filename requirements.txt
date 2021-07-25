@@ -1,0 +1,14 @@
+Django
+django-crispy-forms
+django-daterange-filter
+django-easy-pdf
+django-multiselectfield
+django-mysql
+mysql-connector-python
+mysqlclient
+PyPDF2
+python-docx
+pytz
+reportlab
+wfastcgi
+xhtml2pdf

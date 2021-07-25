@@ -1,0 +1,437 @@
+{% extends "page1/base.html" %}
+{% load crispy_forms_tags %}
+{% load customtags %}
+{% block content %}
+{% if user.is_authenticated %}
+<style>
+    .style-table > thead > tr >th{
+    color: #FFFFFF;
+    background-color: black;
+    }
+
+    	@media only screen and (max-width: 600px){
+    	.date-row{
+    	margin-top: -50px;
+
+    	}
+    	.row-btn{
+    	    display: none;
+    	}
+
+	}
+	@media only screen and (min-width: 900px){
+		#payment{
+			margin-left:0px;
+		}
+		.date-st{
+		    margin-top:0px;
+		    margin-left:0;
+		}
+		.date-label{
+		    margin-left: -50px;margin-right:-40px;margin-top:5px;
+		}
+		.date-label2{
+		    margin-left: -90px;margin-right:-50px;margin-top:5px;
+		}
+
+		#opt{
+
+		    margin-top:0px;
+		}
+	}
+
+	    input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+</style>
+
+
+<div class="" style="padding-top:0px;">
+    <ol class="breadcrumb" style="background: transparent; font-size:14px; font-weight:700;">
+    <li class="breadcrumb-item"><a href="{% url 'project-home' %}" style="text-decoration:none">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Payment Due</li>
+    </ol>
+    <br>
+    <div class="container" style="border-radius:0px;">
+        <div class="card" style="border-radius:5px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+            <div class="card-body" style="padding:25px;">
+                <div class="" style="">
+                        <form autocomplete="off" action="/payment_due_view" method="POST">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                <span style="font-size:20px;font-weight:700;">Select Admission Number: </span>
+                                </div>
+                                <div class="form-group col-md-2 autocomplete">
+                                    <input type="text" id="myText" class="form-control form-control-sm" placeholder="Admission Number" name="student_admissionno"><br>
+                                </div>&emsp;
+                            </div>
+                            <div class="form-row date-row">
+                                <div class="form-group col-md-3">
+                                    <span style="font-size:20px;font-weight:700;">Select Date Range : </span>
+                                </div>
+                                <div class="form-group col-md-1 date-label">From:</div>
+                                <div class="form-group col-md-2 date-st">
+                                    <input class="form-control form-control-sm" type="date" name="from_date">
+                                </div>
+                                <div class="form-group col-md-1 date-st"></div>
+                                <div class="form-group col-md-1 date-label2">To:</div>
+                                <div class="form-group col-md-2 date-st">
+                                     <input class="form-control form-control-sm" type="date" name="to_date">
+                                </div>&emsp;
+                                <select name="type_of_payment" id="type_of_payment" class="form-control form-control-sm" onchange="this.form.submit();">
+                                    <option selected disabled><span class="th-sm" style="">Select Payment Type</span> </option>
+                                        {% for i in lookup_type %}
+                                            <option value={{ i.lookup_inputvalue }} name="type_of_payment">{{ i.lookup_inputvalue |title }}</option>
+                                        {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                </div>
+{% if type_of_payment == "admission" %}
+        <h4 style="font-size:20px;">Admission Fee</h4>
+        <br>
+        <div style="overflow:auto;">
+        <table id="dtBasicExample" class="table table-bordered table-hover table-sm style-table" id="hide" cellspacing="20" style="background-color:#FFFFFF;">
+            <thead>
+                <tr>
+                    <th>
+                        Admission No.
+                    </th>
+                    <th>
+                        Student Name
+                    </th>
+                    <th>
+                        Admission fee set
+                    </th>
+                    <th>
+                        Total fee paid
+                    </th>
+                    <th>
+                        Fee Details
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in fee_set %}
+                <tr>
+                    <td>{{ i.student.admission_number }}</td>
+                    <td>{{ i.student.first_name|title }} {{ i.student.last_name|title }}</td>
+                    <td>{{ i.admission_fees_set }}</td>
+                    <td>
+                        {{ payment_paid_total }}
+                    </td>
+                    <td>
+                        <ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i == j.payment %}
+                            <span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                {{ j.fees_paid }}
+                            </span>
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+{% endif %}
+
+{% if type_of_payment == "uniform" %}
+            <h4 style="font-size:20px;">Uniform Fee</h4><br>
+        <div style="overflow:auto;">
+        <table id="dtBasicExample1" class="table table-bordered table-hover table-sm style-table" cellspacing="20" style="background-color:#FFFFFF;">
+            <thead>
+                <tr>
+                    <th>
+                        Admission Number
+                    </th>
+                    <th>
+                        Student Name
+                    </th>
+                    <th>
+                        Uniform fee set
+                    </th>
+                    <th>
+                        Total fee paid
+                    </th>
+                    <th>
+                        Fee Details
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in fee_set %}
+                <tr>
+                    <td>{{ i.student.admission_number }}</td>
+                    <td>{{ i.student.first_name|title }} {{ i.student.last_name|title }}</td>
+                    <td>{{ i.uniform_fees_set }}</td>
+                    <td>
+                        {{payment_paid_total}}
+                    </td>
+                    <td>
+                        <ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i == j.payment %}
+                            <span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                {{ j.fees_paid }}
+
+                            </span>&emsp;
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+{% endif %}
+
+{% if type_of_payment == "monthly" %}
+        <h4 style="font-size:20px;">Monthly Fee</h4><br>
+        <div style="overflow:auto;">
+        <table border="10px" id="dtBasicExample1" class="table table-bordered table-hover table-sm style-table" cellspacing="20" style="background-color:#FFFFFF;border:5px;">
+            <thead style="background:black;">
+                <tr>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        Adm. No.
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        Student Name
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        Fee Set
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        Total Paid
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        January
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        February
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        March&emsp;
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        April&emsp;&emsp;
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        May&emsp;&emsp;
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        June&emsp;&emsp;
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        July&emsp;&emsp;
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        August&emsp;
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        September
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        October
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        November
+                    </th>
+                    <th class="th-sm" style="color:#FFFFFF;">
+                        December
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in fee_set %}
+
+                <tr>
+                    <td>{{ i.student.admission_number }}</td>
+                    <td>{{ i.student.first_name|title }} {{ i.student.last_name|title }}</td>
+                    <td>{{ i.monthly_fees_set }}</td>
+                    <td>{{ payment_paid_total }}</td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "January" %}
+                        &emsp;           <span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "February" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "March" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "April" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "May" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "June" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+
+                                {% if j.fees_paid_date|date:'F' == "July" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                        </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "August" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "September" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "October" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                                {% endif %}
+                        </span>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "November" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+                    <td><ul style="margin: 0;padding: 0;list-style:none;">
+                        {% for j in payment_paid %}
+                            {% if i.student == j.payment %}
+                                {% if j.fees_paid_date|date:'F' == "December" %}
+                        &emsp;<span data-toggle="tooltip" data-placement="right" title="Date of payment : {{ j.fees_paid_date }}">
+                                    {{ j.fees_paid }}
+                            </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+{% endif %}
+    </div>
+    </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

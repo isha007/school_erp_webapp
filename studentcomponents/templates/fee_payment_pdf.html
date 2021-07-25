@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+</head>
+<style>
+
+      .heading {
+      font-weight: 700;
+      font-size: 14px;
+      text-align: center;
+      }
+
+
+ </style>
+
+<body>
+<p style="text-align:center"> <img src="../media/wards-logo.png"> </p>
+<u><h3 style="text-align:center;font-size: 18px;">{{type_of_payment|title}} fee report</h3></u><br>
+<p style="font-size:15px;"><b>Month</b>: {{month}}, {{year}}</p>
+
+
+    <table border="1" cellpadding="5">
+        <tr>
+            <th class="heading">Adm. No.</th>
+            <th class="heading">Student name</th>
+            <th class="heading">Fee set (in Rupees)</th>
+            <th class="heading">Fee Paid (in Rupees)</th>
+        </tr>
+        {% for i in student %}
+        <tr>
+            <td>
+                {{ i.admission_number }}
+            </td>
+            <td>
+                {{ i.first_name }} {{ i.last_name}}
+            </td>
+
+            {% for j in fee_set %}
+                {% if i == j.student %}
+                    {% if fee_set_type == "monthly_fees_set" %}
+                    <td>
+                        {{ j.monthly_fees_set }}
+                    </td>
+                    {% endif %}
+                    {% if fee_set_type == "admission_fees_set" %}
+                    <td>
+                        {{ j.admission_fees_set }}
+                    </td>
+                    {% endif %}
+                    {% if fee_set_type == "uniform_fees_set" %}
+                    <td>
+                        {{ j.uniform_fees_set }}
+                    </td>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            <td>
+            {% for k in paid_record %}
+            {% if i == k.payment %}
+            {% if k.fees_paid_date|date:'F' == month %}
+
+                {{ k.fees_paid }}
+
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+
+
+    </table>
+</body>
+</html>
